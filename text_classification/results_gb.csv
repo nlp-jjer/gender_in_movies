@@ -1,0 +1,145 @@
+,model_type,clf,parameters,auc-roc,accuracy,precision,recall,runtime,confusion_matrix,y_pred_probs
+0,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 10, 'subsample': 0.5}",0.527095233,0.70203056,0,0,9.480241776,"[[62301     0]
+ [26443     0]]",[0.30657611 0.30075354 0.30075354 ... 0.30075354 0.30075354 0.30875967]
+1,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 10, 'subsample': 1}",0.52191911,0.70203056,0,0,14.24713731,"[[62301     0]
+ [26443     0]]",[0.3079058  0.30077383 0.30077383 ... 0.30077383 0.30077383 0.3079058 ]
+2,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 100, 'subsample': 0.5}",0.552584397,0.70203056,0,0,57.33034849,"[[62301     0]
+ [26443     0]]",[0.31887705 0.29881352 0.29881352 ... 0.29881352 0.29881352 0.32571593]
+3,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 100, 'subsample': 1}",0.541568537,0.702041828,0.6,0.000113452,99.8819952,"[[62299     2]
+ [26440     3]]",[0.32699783 0.29965902 0.29965902 ... 0.29965902 0.29965902 0.32864333]
+4,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 10, 'n_estimators': 10, 'subsample': 0.5}",0.546749276,0.70203056,0,0,12.7395854,"[[62301     0]
+ [26443     0]]",[0.305389   0.30038406 0.30038406 ... 0.30038406 0.30038406 0.30849198]
+5,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 10, 'n_estimators': 10, 'subsample': 1}",0.53779692,0.70203056,0,0,20.42868543,"[[62301     0]
+ [26443     0]]",[0.30578449 0.3004565  0.3004565  ... 0.3004565  0.3004565  0.33142157]
+6,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 10, 'n_estimators': 100, 'subsample': 0.5}",0.565773461,0.702199585,0.727272727,0.000907613,127.5129302,"[[62292     9]
+ [26419    24]]",[0.3128542  0.29620844 0.29738032 ... 0.29738032 0.29621685 0.32709063]
+7,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.01, 'max_depth': 10, 'n_estimators': 100, 'subsample': 1}",0.554001653,0.702255927,0.628205128,0.001853042,203.9957101,"[[62272    29]
+ [26394    49]]",[0.3334935  0.29809366 0.29809366 ... 0.29809366 0.29809366 0.37812195]
+8,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 10, 'subsample': 0.5}",0.541174489,0.702041828,1,3.78E-05,5.421838045,"[[62301     0]
+ [26442     1]]",[0.32030677 0.29835189 0.29835189 ... 0.29835189 0.29835189 0.32433508]
+9,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 10, 'subsample': 1}",0.54075577,0.702053097,0.75,0.000113452,9.316754103,"[[62300     1]
+ [26440     3]]",[0.3254806  0.29917772 0.29917772 ... 0.29917772 0.29917772 0.33184289]
+10,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 100, 'subsample': 0.5}",0.582934282,0.703225007,0.64021164,0.00915176,53.78627801,"[[62165   136]
+ [26201   242]]",[0.29960456 0.28269554 0.29324284 ... 0.29324284 0.27961877 0.32812345]
+11,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 100, 'subsample': 1}",0.581249775,0.703596863,0.729372937,0.008357599,105.2597222,"[[62219    82]
+ [26222   221]]",[0.31024012 0.28814267 0.29565594 ... 0.29565594 0.27718906 0.34528419]
+12,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 10, 'n_estimators': 10, 'subsample': 0.5}",0.554942258,0.702289732,0.68852459,0.001588322,16.05442715,"[[62282    19]
+ [26401    42]]",[0.3168691  0.29721027 0.29721027 ... 0.29721027 0.29721027 0.33023507]
+13,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 10, 'n_estimators': 10, 'subsample': 1}",0.550462803,0.702210854,0.593023256,0.001928677,21.49271345,"[[62266    35]
+ [26392    51]]",[0.32765826 0.29813175 0.29813175 ... 0.29813175 0.29813175 0.3880994 ]
+14,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 10, 'n_estimators': 100, 'subsample': 0.5}",0.591069492,0.704971604,0.615180936,0.026358583,116.600116,"[[61865   436]
+ [25746   697]]",[0.30736031 0.27168149 0.28730773 ... 0.28979684 0.27284416 0.40797976]
+15,GB,"GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.1, loss='deviance', max_depth=10,
+              max_features=None, max_leaf_nodes=None,
+              min_impurity_decrease=0.0, min_impurity_split=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              presort='auto', random_state=None, subsample=1, verbose=0,
+              warm_start=False)","{'learning_rate': 0.1, 'max_depth': 10, 'n_estimators': 100, 'subsample': 1}",0.590398678,0.705005409,0.642548596,0.022501229,212.7516625,"[[61970   331]
+ [25848   595]]",[0.29718586 0.28400493 0.29340032 ... 0.29496953 0.25850963 0.40144453]

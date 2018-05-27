@@ -36,7 +36,7 @@ GRID_BEST = {'MNB': {'alpha':[0.5]}, 'LR': {'penalty': ['l1', 'l2'], 'C': [1]}}
 # Ran the code below multiple times for different classifiers groups
 # Logistic regression and multinomial NB do the best at 71% accuracy
 # But recall is really bad in all these models! Not capturing most 
-X_train, X_test, y_train, y_test = pipeline.prepare_data("../movies.p")
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p")
 results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID) 
 results.to_csv('results_mnb.csv')
 
@@ -44,23 +44,38 @@ results.to_csv('results_mnb.csv')
 
 # Create separate models by genre
 # Romance gets accuracy of 80%
-X_train, X_test, y_train, y_test = pipeline.prepare_data("../movies.p", genre = 'romance')
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", genre = 'romance')
 results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST)
 results.to_csv('results_romance.csv')
 
 # Action gets accuracy of 70%
-X_train, X_test, y_train, y_test = pipeline.prepare_data("../movies.p", genre = 'action')
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", genre = 'action')
 results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST)
 results.to_csv('results_action.csv')
 
-# Sci-fi gets accuracy of 76%
-X_train, X_test, y_train, y_test = pipeline.prepare_data("../movies.p", genre = 'sci-fi')
+# Drama gets accuracy of 69%
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", genre = 'drama')
 results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST)
-results.to_csv('results_scifi.csv')
+results.to_csv('results_drama.csv')
+
+# Comedy gets accuracy of 65%
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", genre = 'comedy')
+results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST)
+results.to_csv('results_comedy.csv')
+
+# Crime gets accuracy of 69%
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", genre = 'crime')
+results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST)
+results.to_csv('results_crime.csv')
+
 
 ###################################
-# Clasisfy by speaker pair
+# Clasisfy by speaker pair - probably not useful for this project
 # Accuracy is 47%. 
-X_train, X_test, y_train, y_test = pipeline.prepare_data("../movies.p", speaker_pairs = True)
+X_train, X_test, y_train, y_test = pipeline.prepare_data("../data/movies_features.p", speaker_pairs = True)
 results = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST, multiclass = True)
 results.to_csv('results_speaker_pairs.csv')
+
+
+###################################
+# Save the final model as a pickle file

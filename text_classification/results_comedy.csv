@@ -1,0 +1,13 @@
+,model_type,clf,parameters,auc-roc,accuracy,precision,recall,runtime,confusion_matrix,y_pred_probs
+0,MNB,"MultinomialNB(alpha=0.5, class_prior=None, fit_prior=True)",{'alpha': 0.5},0.6506620238527007,0.6987903428198564,0.6504504504504505,0.11397000789265983,0.039995431900024414,"[[13200   388]
+ [ 5613   722]]",[0.19527173 0.82250336 0.22181493 ... 0.18052106 0.15601278 0.3571535 ]
+1,LR,"LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l1'}",0.6320963364536097,0.6954775887165587,0.6101973684210527,0.11712707182320442,0.3218533992767334,"[[13114   474]
+ [ 5593   742]]",[0.22145818 0.69633628 0.30272096 ... 0.29581644 0.23007276 0.29581644]
+2,LR,"LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l2'}",0.6462804824071753,0.6970837725242183,0.6104565537555229,0.1308602999210734,0.39968347549438477,"[[13059   529]
+ [ 5506   829]]",[0.22459956 0.69035464 0.23942447 ... 0.20527492 0.14967807 0.32791564]

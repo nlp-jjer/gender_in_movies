@@ -19,45 +19,26 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 
 
-def prepare_data(filename, genre = 'all', speaker_pairs = False):
+def prepare_data(filename, genre = 'all', speaker_pairs = False, random_state = 42):
     '''
-    Prepare data for modeling
+    Prepare data for modeling. Get the same train/test split unless random_state is specified.
     
     filename: path to pickled dataframe
     '''
     # load pre-processed df
     df = pickle.load(open(filename, 'rb'))
-    
-    # Treat gender_from column: remove unknown gender, 0 is male and 1 is female
-    df = df[df.gender_from != '?']
-    df['gender_from'] = np.where(df.gender_from == 'f', 1, 0)
-    
+   
     # specify genre
     if genre != 'all':
         df = df[df.genre == genre]
     
     if speaker_pairs: # use gender pairing as outcome classes
-        # MM = 0, MF = 1, FM = 2, FF = 3
-        
-        # Treat gender_to column: remove unknown gender, 0 is male and 1 is female
-        df = df[df.gender_to != '?']
-        df['gender_to'] = np.where(df.gender_to == 'f', 1, 0)
-        
-        # Create gender pair column
-        conditions = [(df.gender_from == 0) & (df.gender_to == 0),
-             (df.gender_from == 0) & (df.gender_to == 1),
-             (df.gender_from == 1) & (df.gender_to == 0),
-             (df.gender_from == 1) & (df.gender_to == 1)]
-        choices = [0,1,2,3]
-    
-        df['gender_pair'] = np.select(conditions, choices)
-        
         # split into train and test
-        X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_pair.astype('int'), test_size=0.33, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_pair.astype('int'), test_size=0.33, random_state=random_state)
 
     else: # use gender_from (M/F) as outcome classes
         # split into train and test
-        X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_from.astype('int'), test_size=0.33, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_from.astype('int'), test_size=0.33, random_state=random_state)
 
     # transform training data
     count_vect = CountVectorizer() # using bag of words

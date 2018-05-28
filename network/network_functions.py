@@ -175,7 +175,7 @@ def draw_graph(g, movie_df):
 
 
 
-def run_all(movies_df, movie_id, draw_graph = False):
+def run_all(movies_df, movie_id, draw_the_graph = False):
     '''
     Run all functions above to get the final dataframe of centrality
     by gender. Could be run in a loop over all movies...
@@ -185,7 +185,7 @@ def run_all(movies_df, movie_id, draw_graph = False):
     g = build_network(movie_df)
     centrality = centrality_by_gender(movie_df, g)
 
-    if draw_graph:
+    if draw_the_graph:
         draw_graph(g, movie_df)
 
     return centrality

@@ -195,7 +195,6 @@ def run_all(movies_df, movie_id, draw_graph = False):
 def all_movies(movies_df):
 
     ids = list(movies_df['movie_id'].unique())
-
     dfs = []
 
     for id in ids:
@@ -208,7 +207,5 @@ def all_movies(movies_df):
         dfs.append(df)
 
     final = pd.concat(dfs)
-
     pickle.dump(final, open('../data/centrality.p', 'wb'))
-
     print("it's pickled!")

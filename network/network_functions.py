@@ -84,7 +84,7 @@ def measure_centrality(movie_df, g):
     betweenness = pd.DataFrame(list(nx.betweenness_centrality(g).items()),
                                columns=['char_id','betweenness'])
 
-    eigenvector = pd.DataFrame(list(nx.eigenvector_centrality(g).items()),
+    eigenvector = pd.DataFrame(list(nx.eigenvector_centrality(g, max_iter = 1000).items()),
                                columns=['char_id','eigenvector'])
 
     dfs = [gender, degree, closeness, betweenness, eigenvector]
@@ -103,25 +103,79 @@ def centrality_by_gender(movie_df, g):
 
     centralities = measure_centrality(movie_df, g)
 
-    operations = {'degree': np.mean, 'closeness': np.mean,
-                  'betweenness': np.mean, 'eigenvector': np.mean}
-
-    grouped = centralities.groupby('gender').agg(operations).reset_index()
-
-    grouped = grouped[grouped['gender'] != '?']
+    centralities = centralities[centralities['gender'] != '?']
 
         #left the unknown gender characters in up until this point so that
         #connections with those characters could be included in the
         #centrality calculations
 
+    if centralities.shape[0] == 0: #for movies where all genders are unknown
+        return None
+
+    operations = {'degree': np.mean, 'closeness': np.mean,
+                  'betweenness': np.mean, 'eigenvector': np.mean}
+
+    grouped = centralities.groupby('gender').agg(operations).reset_index()
+
     grouped['overall_avg'] = (grouped['degree'] + grouped['closeness'] +
                              grouped['betweenness'] + grouped['eigenvector']) / 4
+
+    grouped['movie_id'] = movie_df['movie_id']
+    grouped['year'] = movie_df['movie_year']
+    grouped['genre'] = movie_df['genre']
 
     return grouped
 
 
 
-def run_all(movies_df, movie_id):
+def draw_graph(g, movie_df):
+
+    gender_dict = create_gender_dict(movie_df)
+
+    #setup
+    plt.figure(figsize = (8, 8))
+    layout = nx.spring_layout(g, iterations = 50)
+
+    #nodes
+    female = [char for char, gender in gender_dict.items() if gender == 'f']
+    male = [char for char, gender in gender_dict.items() if gender == 'm']
+    unknown = [char for char, gender in gender_dict.items() if gender == '?']
+
+    #node sizes
+    female_sizes = [g.degree(char) * 50 for char in female]
+    male_sizes = [g.degree(char) * 50 for char in male]
+    unknown_sizes = [g.degree(char) * 50 for char in unknown]
+
+    #edge widths based on number of interactions between two nodes
+    lst = list(g.edges(data = True))
+    counts = np.array([d['count'] for c1, c2, d in lst])
+
+    #normalize the counts
+    minimum = np.min(counts)
+    maximum = np.max(counts)
+
+    counts = (counts - minimum) / (maximum - minimum) + 0.05 #add a little bit so none are zero
+    counts = counts * 5
+
+    nx.draw_networkx_nodes(g, layout, nodelist = female, node_color = '#ADA342', node_size = female_sizes)
+    nx.draw_networkx_nodes(g, layout, nodelist = male, node_color = '#40616c', node_size = male_sizes)
+    nx.draw_networkx_nodes(g, layout, nodelist = unknown, node_color = '#f6ca0e', node_size = unknown_sizes)
+
+    nx.draw_networkx_edges(g, layout, width=counts, edge_color="#AEAEAE")
+
+    plt.axis('off')
+
+    legend_elements = [Line2D([0], [0], color = '#ADA342', marker = 'o', label = 'Female', markersize = 8, linestyle = 'None'),
+                       Line2D([0], [0], color = '#40616c', marker = 'o', label = 'Male', markersize = 8, linestyle = 'None'),
+                       Line2D([0], [0], color = '#f6ca0e', marker = 'o', label = 'Unknown', markersize = 8, linestyle = 'None')]
+
+    plt.legend(handles = legend_elements, loc = 'best', frameon = False, handletextpad = 0)
+
+    plt.show()
+
+
+
+def run_all(movies_df, movie_id, draw_graph = False):
     '''
     Run all functions above to get the final dataframe of centrality
     by gender. Could be run in a loop over all movies...
@@ -131,4 +185,30 @@ def run_all(movies_df, movie_id):
     g = build_network(movie_df)
     centrality = centrality_by_gender(movie_df, g)
 
+    if draw_graph:
+        draw_graph(g, movie_df)
+
     return centrality
+
+
+
+def all_movies(movies_df):
+
+    ids = list(movies_df['movie_id'].unique())
+
+    dfs = []
+
+    for id in ids:
+        print(id)
+        df = run_all(movies_df, id)
+
+        if df is None: #movies with all unknown genders will have a None value
+            continue
+
+        dfs.append(df)
+
+    final = pd.concat(dfs)
+
+    pickle.dump(final, open('../data/centrality.p', 'wb'))
+
+    print("it's pickled!")

@@ -33,14 +33,25 @@ class Movie():
         
         # from network connectedness
         self.network_connect = None
+    
+    def get_female_prop(self):
+        print("\n########################################\nCalculating female proportion...")
+        tot_lines = self.lines.shape[0]
+        female_lines = len(self.lines[self.lines.gender_from == 1])  
+        female_prop = np.mean(self.lines.gender_from)
         
+        print('Total lines: ', tot_lines)        
+        print('Female lines: ', female_lines)        
+        print('Female proportion: ', round(female_prop, 2))
+        return female_prop
+    
     def get_cosine_sim(self):
         print("\n########################################\nCalculating cosine similarity...")
         
         cosine_sim = 0
         ### CODE TO CALCULATE COSINE SIMILARITY ###
         
-        print("\nCosine similarity: ", cosine_sim)
+        print("\nCosine similarity: ", round(cosine_sim,2))
         
         return cosine_sim
         
@@ -51,6 +62,7 @@ class Movie():
         self.model = clf_object.clf_fitted
         self.X_test = self.lines.words
         
+        
         X_test_tfidf = pipeline.transform_test(self.X_test, 
                                                self.clf_object.count_vect, 
                                                self.clf_object.tfidf_transformer)
@@ -59,12 +71,12 @@ class Movie():
         
         # using this as a dummy class ratio for now
         pct_female = np.mean(predicted) 
-        print("\n% of lines predicted female: ", pct_female)
+        print("% of lines predicted female: ", round(pct_female, 2))
                 
         class_ratio = pct_female
         ### CODE TO CALCULATE CLASSIFICATION RATIO ###
         
-        print("\nClass ratio: ", class_ratio)
+        print("Class ratio: ", round(class_ratio, 2))
 
         
         return class_ratio
@@ -76,7 +88,7 @@ class Movie():
         ### CODE TO CALCULATE NETWORK CONNECTEDNESS ###
         
         
-        print("\nNetwork connectedness: ", network_connect)
+        print("\nNetwork connectedness: ", round(network_connect, 2))
 
         return network_connect
         
@@ -85,13 +97,14 @@ class Movie():
         Inputs
             classifer: pickled classification model object
         """
+        female_prop = self.get_female_prop()
         cosine_sim = self.get_cosine_sim()
         class_ratio = self.get_class_ratio(classifier)
         network_connect = self.get_network_connect()
         
         # need to weight these based on observed distributions 
         final_score = np.mean([cosine_sim, class_ratio, network_connect])
-        print("\n########################################\nFinal score: ", final_score)
+        print("\n########################################\nFinal score: ", round(final_score, 2))
         
         
 if __name__ == "__main__":       

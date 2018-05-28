@@ -19,6 +19,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 
 
+
+class TextClassifier():
+    '''
+    To store the sklearn model object and the trained vocabulary for later use
+    '''
+    def __init__(self, clf_fitted, count_vect, tfidf_transformer):
+        self.clf_fitted = clf_fitted
+        self.count_vect = count_vect
+        self.tfidf_transformer = tfidf_transformer
+        
+
 def prepare_data(filename, genre = 'all', speaker_pairs = False, random_state = 42):
     '''
     Prepare data for modeling. Get the same train/test split unless random_state is specified.
@@ -32,33 +43,42 @@ def prepare_data(filename, genre = 'all', speaker_pairs = False, random_state = 
     if genre != 'all':
         df = df[df.genre == genre]
     
+    # split into train and test sets
     if speaker_pairs: # use gender pairing as outcome classes
-        # split into train and test
         X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_pair.astype('int'), test_size=0.33, random_state=random_state)
-
     else: # use gender_from (M/F) as outcome classes
-        # split into train and test
         X_train, X_test, y_train, y_test = train_test_split(df.words, df.gender_from.astype('int'), test_size=0.33, random_state=random_state)
 
-    # transform training data
+    # transform train and test sets
+    X_train_tfidf, count_vect, tfidf_transformer = transform_train(X_train)
+    X_test_tfidf = transform_test(X_test, count_vect, tfidf_transformer)
+
+    return X_train_tfidf, X_test_tfidf, y_train, y_test, count_vect, tfidf_transformer
+
+
+def transform_train(X_train):
     count_vect = CountVectorizer() # using bag of words
-    X_train_counts = count_vect.fit_transform(X_train)
     tfidf_transformer = TfidfTransformer()
+
+    X_train_counts = count_vect.fit_transform(X_train)    
     X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
     
-    # transform testing data
+    return X_train_tfidf, count_vect, tfidf_transformer
+
+
+def transform_test(X_test, count_vect, tfidf_transformer):
     X_test_counts = count_vect.transform(X_test) # JW TO DO: how does this treat unseen ngrams?
     X_test_tfidf = tfidf_transformer.transform(X_test_counts)
+    
+    return X_test_tfidf
 
-    return X_train_tfidf, X_test_tfidf, y_train, y_test
 
-
-def fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID, multiclass = False):
+def fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID, count_vect, tfidf_transformer, multiclass = False):
     """
     Loop through a number of classification fit_models and parameters, saving results for each run
     Based off code from previous homework assignment: https://github.com/joan-wang/Machine-Learning/blob/master/hw3/model.py
     """
-    
+    classifier_objects = []
     results =  pd.DataFrame(columns=('model_type','clf', 'parameters', 'auc-roc', 
                                      'accuracy', 'precision', 'recall',
                                      'runtime', 'confusion_matrix', 'y_pred_probs'))
@@ -71,13 +91,13 @@ def fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID, multiclass =
                 start_time = time.time()
                 clf.set_params(**p)
                 clf_fitted = clf.fit(X_train, y_train)
+                clf_object = TextClassifier(clf_fitted, count_vect, tfidf_transformer)
                 
                 end_time = time.time()
                 tot_time = end_time - start_time
                 print(p)
                 
                 predicted = clf_fitted.predict(X_test)
-                
                 
                 if multiclass:
                     y_pred_probs = clf_fitted.predict_proba(X_test)
@@ -93,15 +113,17 @@ def fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID, multiclass =
                 accuracy = metrics.accuracy_score(y_test, predicted)
                 
                 conf = metrics.confusion_matrix(y_test, predicted)
+                
                 results.loc[len(results)] = [key, clf, p,
 											auc_roc,
 											accuracy, precision, recall,									
 											tot_time, conf, y_pred_probs]
+                classifier_objects.append(clf_object)
                 # plot_precision_recall(y_test,y_pred_probs,clf)
             except IndexError:
                 print('Error')
                 continue
-    return results
+    return results, classifier_objects
 
 
 

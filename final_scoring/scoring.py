@@ -103,7 +103,7 @@ class Movie():
         network_connect = self.get_network_connect()
         
         # need to weight these based on observed distributions 
-        final_score = np.mean([cosine_sim, class_ratio, network_connect])
+        final_score = np.mean([female_prop, cosine_sim, class_ratio, network_connect])
         print("\n########################################\nFinal score: ", round(final_score, 2))
         
         

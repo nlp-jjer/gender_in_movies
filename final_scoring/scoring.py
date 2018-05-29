@@ -108,7 +108,7 @@ class Movie():
         
         
 if __name__ == "__main__":       
-    movies = pickle.load(open("../data/movies_features.p", 'rb'))   
+    movies = pickle.load(open("../data/movies_lines_holdout.p", 'rb'))   
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
     
     # test code on one movie 

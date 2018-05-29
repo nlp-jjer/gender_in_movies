@@ -12,6 +12,7 @@ from sklearn import metrics
 
 sys.path.insert(0, '../text_classification')
 import classification_pipeline as pipeline
+from classification_main import FEATURE_COLS
 # import other modules containing functions to be called from within the class
 
 
@@ -37,8 +38,8 @@ class Movie():
     def get_female_prop(self):
         print("\n########################################\nCalculating female proportion...")
         tot_lines = self.lines.shape[0]
-        female_lines = len(self.lines[self.lines.gender_from == 1])  
-        female_prop = np.mean(self.lines.gender_from)
+        female_lines = len(self.lines[self.lines.gender_from == 'f'])  
+        female_prop = female_lines/tot_lines
         
         print('Total lines: ', tot_lines)        
         print('Female lines: ', female_lines)        
@@ -60,10 +61,9 @@ class Movie():
         
         self.clf_object = clf_object
         self.model = clf_object.clf_fitted
-        self.X_test = self.lines.words
-        
-        
-        X_test_tfidf = pipeline.transform_test(self.X_test, 
+
+        self.X_test = pipeline.add_columns(self.lines)
+        X_test_tfidf = pipeline.transform_test(self.X_test[FEATURE_COLS], 
                                                self.clf_object.count_vect, 
                                                self.clf_object.tfidf_transformer)
        

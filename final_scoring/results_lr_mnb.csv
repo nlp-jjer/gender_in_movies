@@ -1,13 +1,13 @@
 ,model_type,clf,parameters,auc-roc,accuracy,precision,recall,runtime,confusion_matrix,y_pred_probs
-0,MNB,"MultinomialNB(alpha=0.5, class_prior=None, fit_prior=True)",{'alpha': 0.5},0.6498735497011556,0.705569781097784,0.6331976481230213,0.08815010703941568,0.021016836166381836,"[[35248   811]
+0,MNB,"MultinomialNB(alpha=0.5, class_prior=None, fit_prior=True)",{'alpha': 0.5},0.6498735497011556,0.705569781097784,0.6331976481230213,0.08815010703941568,0.022016286849975586,"[[35248   811]
  [14482  1400]]",[0.22532453 0.33355304 0.63661309 ... 0.31442215 0.08806178 0.35985953]
 1,LR,"LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l1'}",0.6359040628258018,0.704299108603993,0.60973562736047,0.09148721823447928,0.5143630504608154,"[[35129   930]
- [14429  1453]]",[0.29292803 0.34943148 0.62032367 ... 0.16008869 0.12548581 0.45276318]
+          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l1'}",0.6359018172790658,0.704299108603993,0.609643605870021,0.09155018259665029,0.49935460090637207,"[[35128   931]
+ [14428  1454]]",[0.2929389  0.34956358 0.62033789 ... 0.16008268 0.1254894  0.45286177]
 2,LR,"LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l2'}",0.6479909608467136,0.704761171329008,0.6062961523513408,0.09822440498677748,1.9668629169464111,"[[35046  1013]
+          verbose=0, warm_start=False)","{'C': 1, 'penalty': 'l2'}",0.6479909608467136,0.704761171329008,0.6062961523513408,0.09822440498677748,1.9934155941009521,"[[35046  1013]
  [14322  1560]]",[0.32470789 0.35759468 0.59356034 ... 0.1958396  0.09062125 0.45115861]

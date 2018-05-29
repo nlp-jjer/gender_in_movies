@@ -12,7 +12,7 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 
 # define columns to use as features
-FEATURE_COLS = ['words']#, 'agency_pos_prop','power_pos_prop', 'agency_neg_prop','power_neg_prop']
+FEATURE_COLS = ['words', 'agency_pos_prop','power_pos_prop', 'agency_neg_prop','power_neg_prop']
 
 # big loop
 CLASSIFIERS = {'RF': RandomForestClassifier(),
@@ -49,8 +49,10 @@ def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dic
     return results, classifier_objects
 
 
-results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS,CLASSIFIERS_BEST, GRID_BEST)
-pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))
+if __name__ == 'main':
+    results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS,CLASSIFIERS_BEST, GRID_BEST)
+    pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))
+
 
 '''
 OLD CODE THAT WAS PREVIOUSLY RUN

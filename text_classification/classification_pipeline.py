@@ -37,7 +37,11 @@ def prepare_data(filename, feature_cols, genre = 'all', speaker_pairs = False, r
     
     filename: path to pickled dataframe
     ''' 
-    df = generate_features(filename)
+    # load pre-processed df
+    df = pickle.load(open(filename, 'rb'))
+    
+    # add columns to pre-processed df
+    df = add_columns(df)
     
     # specify genre
     if genre != 'all':
@@ -56,10 +60,7 @@ def prepare_data(filename, feature_cols, genre = 'all', speaker_pairs = False, r
     return X_train_tfidf_combined, X_test_tfidf_combined, y_train, y_test, count_vect, tfidf_transformer
 
 
-def generate_features(filename):
-    # load pre-processed df on which to add features
-    df = pickle.load(open(filename, 'rb'))
-    
+def add_columns(df):    
     # Treat gender_from and gender_to columns: remove unknown gender, 0 is male and 1 is female
     df = df[df.gender_from != '?']
     df['gender_from'] = np.where(df.gender_from == 'f', 1, 0)

@@ -12,7 +12,7 @@ from sklearn import metrics
 
 sys.path.insert(0, '../text_classification')
 import classification_pipeline as pipeline
-# import other models containing functions to be called from within the class
+# import other modules containing functions to be called from within the class
 
 
 class Movie():

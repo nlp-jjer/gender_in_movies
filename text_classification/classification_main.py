@@ -38,7 +38,12 @@ GRID_BEST = {'MNB': {'alpha':[0.5]}, 'LR': {'penalty': ['l1', 'l2'], 'C': [1]}}
 CLASSIFIER_FINAL = {'MNB': MultinomialNB()}
 GRID_FINAL = {'MNB': {'alpha':[0.5]}}
 
-# get normalization metrics using training data
+# get normalization metrics for line proportions using training data
+prop_diff = pickle.load(open('../text_classification/prop_diff', 'rb'))
+prop_diff_mean = np.nanmean(prop_diff)
+prop_diff_sd = np.nanstd(prop_diff)
+
+# get normalization metrics for classifier using training data
 ratios_ls = pickle.load(open('../text_classification/ratios_ls', 'rb'))
 clf_ratios_mean = np.nanmean(ratios_ls)
 clf_ratios_sd = np.nanstd(ratios_ls)
@@ -50,6 +55,8 @@ male_class_sd = np.nanstd(male_class)
 female_class = pickle.load(open('../text_classification/female_avgs', 'rb'))
 female_class_mean = np.nanmean(female_class)
 female_class_sd = np.nanstd(female_class)
+
+
 
 def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dict, genre = 'all', speaker_pairs = False):
     """
@@ -63,10 +70,27 @@ def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dic
     return results, classifier_objects
 
 
-def get_normalization(movies_filename, movies_lines_filename, clf_object):
+def get_normalization_prop(movies_lines_filename):
     '''
-    Get mean and sd ratio value for entire training set (movies used to test and validate the classifer)
-    to use as normalization factor for final scoring.
+    Get average line proportions per gender for each movie in training set 
+    (movies used to test and validate the classifer) to use as normalization factor for final scoring.
+    '''
+    movies_lines_train = pickle.load(open(movies_lines_filename, 'rb'))
+    movies_lines_train['gender_from'] = np.where(movies_lines_train.gender_from == 'f', 1, 0)
+    
+    groupby_movie = movies_lines_train[['movie_id', 'gender_from']].groupby(by = 'movie_id')
+    female_props = groupby_movie.sum()/groupby_movie.count()
+    male_props = 1 - female_props
+    
+    prop_diff = male_props - female_props
+
+    return prop_diff, male_props, female_props
+
+
+def get_normalization_clf(movies_filename, movies_lines_filename, clf_object):
+    '''
+    Get average probabilities per gender for each movie in training set 
+    (movies used to test and validate the classifer) to use as normalization factor for final scoring.
     
     training_movies: list of movies in training set (whole db minus holdout)
     training_df: lines of movies in the training_movies list, classified using
@@ -82,27 +106,34 @@ def get_normalization(movies_filename, movies_lines_filename, clf_object):
     female_avgs = []
     for movie_id in training_movies:
         df = training_df[training_df.movie_id == movie_id]
-        ratio, male, female = pipeline.calculate_ratio2(df)
+        ratio, male, female = pipeline.calculate_class_props(df)
         ratios_ls.append(ratio)
         male_avgs.append(male)
         female_avgs.append(female)
         
     return ratios_ls, male_avgs, female_avgs
 
-'''
+
 if __name__ == 'main':
     # train best classifier
     results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS, CLASSIFIERS_BEST, GRID_BEST)
     pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))   
     
-    # get list of ratios 
-    ratios_ls, male_avgs, female_avgs = get_normalization('../data/movies_train.p', 
+    # get list of class probabilities for training set, save for later use when this module is called
+    ratios_ls, male_avgs, female_avgs = get_normalization_clf('../data/movies_train.p', 
                                 '../data/movies_lines_train.p', 
                                 "../text_classification/mnb_final.p")
     pickle.dump(ratios_ls, open('ratios_ls', 'wb'))
     pickle.dump(female_avgs, open('female_avgs', 'wb'))
     pickle.dump(male_avgs, open('male_avgs', 'wb'))
+    
+    # get list of line proportions for training set, save for later use when this module is called
+    prop_diff, male_props, female_props = get_normalization_prop("../data/movies_lines_train.p")
+    pickle.dump(male_props, open('male_props', 'wb'))
+    pickle.dump(female_props, open('female_props', 'wb'))
+    pickle.dump(prop_diff, open('prop_diff', 'wb'))
 
+'''    
 
 OLD CODE THAT WAS PREVIOUSLY RUN
 ###################################

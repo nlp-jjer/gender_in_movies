@@ -43,6 +43,13 @@ ratios_ls = pickle.load(open('../text_classification/ratios_ls', 'rb'))
 clf_ratios_mean = np.nanmean(ratios_ls)
 clf_ratios_sd = np.nanstd(ratios_ls)
 
+male_class = pickle.load(open('../text_classification/male_avgs', 'rb'))
+male_class_mean = np.nanmean(male_class)
+male_class_sd = np.nanstd(male_class)
+
+female_class = pickle.load(open('../text_classification/female_avgs', 'rb'))
+female_class_mean = np.nanmean(female_class)
+female_class_sd = np.nanstd(female_class)
 
 def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dict, genre = 'all', speaker_pairs = False):
     """
@@ -71,26 +78,32 @@ def get_normalization(movies_filename, movies_lines_filename, clf_object):
     predicted, pred_probs, training_df = pipeline.classify_unseen(training_lines, clf_object, FEATURE_COLS)
 
     ratios_ls = []
+    male_avgs = []
+    female_avgs = []
     for movie_id in training_movies:
         df = training_df[training_df.movie_id == movie_id]
-        ratio = pipeline.calculate_ratio1(df) # basing it off ratio1 for now
+        ratio, male, female = pipeline.calculate_ratio2(df)
         ratios_ls.append(ratio)
-    print(len(ratios_ls))
-    return ratios_ls
+        male_avgs.append(male)
+        female_avgs.append(female)
+        
+    return ratios_ls, male_avgs, female_avgs
 
-
+'''
 if __name__ == 'main':
     # train best classifier
     results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS, CLASSIFIERS_BEST, GRID_BEST)
     pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))   
     
     # get list of ratios 
-    ratios_ls = get_normalization('../data/movies_train.p', 
+    ratios_ls, male_avgs, female_avgs = get_normalization('../data/movies_train.p', 
                                 '../data/movies_lines_train.p', 
                                 "../text_classification/mnb_final.p")
     pickle.dump(ratios_ls, open('ratios_ls', 'wb'))
+    pickle.dump(female_avgs, open('female_avgs', 'wb'))
+    pickle.dump(male_avgs, open('male_avgs', 'wb'))
 
-'''
+
 OLD CODE THAT WAS PREVIOUSLY RUN
 ###################################
 

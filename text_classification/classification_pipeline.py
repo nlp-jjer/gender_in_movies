@@ -9,7 +9,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn import preprocessing, cross_validation, metrics
+from sklearn import preprocessing, metrics
 from sklearn.grid_search import ParameterGrid
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
@@ -227,14 +227,12 @@ def calculate_ratio2(df):
     # This addresses the question: How well does male dialogue fit the male class and female dialogue 
     # fit the female class?        
     male_lines = df[df.gender_from == 0]
-    male_lines_male_prob = np.mean(male_lines.male_prob)
+    male_lines_male_avg = np.mean(male_lines.male_prob)
     
     female_lines = df[df.gender_from == 1]
-    female_lines_female_prob = np.mean(female_lines.female_prob)
+    female_lines_female_avg = np.mean(female_lines.female_prob)
     
-    ratio_of_probs = female_lines_female_prob / male_lines_male_prob
-    
-    return ratio_of_probs
+    return male_lines_male_avg, female_lines_female_avg
 
 
 def plot_precision_recall(y_true, y_score, model_name):

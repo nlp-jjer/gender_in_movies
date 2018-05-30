@@ -29,67 +29,92 @@ class Movie():
         self.lines = lines_df
         self.id = movie_id
         self.counts = nt.create_movie_df(self.lines, self.id)
-
+        
+        # for female prop
+        self.female_prop = None
+        
         # for text classification ratio
         self.X_test = None
+        self.preds = None
+        self.pred_probs = None
         self.clf_object = None
-        self.model = None
-        self.class_ratio = None
+        self.ratio_of_probs = None
 
         # for cosine similarity
         self.cosine_sim = None
 
         # from network connectedness
         self.network_degree = None
-        self.network_betweenness = None
+        self.network_btw = None
 
 
     def get_female_prop(self):
         print("\n########################################\nCalculating female proportion...")
         tot_lines = self.lines.shape[0]
         female_lines = len(self.lines[self.lines.gender_from == 'f'])
-        female_prop = female_lines/tot_lines
+        self.female_prop = female_lines/tot_lines
 
         print('Total lines: ', tot_lines)
         print('Female lines: ', female_lines)
-        print('Female proportion: ', round(female_prop, 2))
-        return female_prop
+        print('Female proportion: ', round(self.female_prop, 2))
+        return self.female_prop
 
 
     def get_cosine_sim(self):
         print("\n########################################\nCalculating cosine similarity...")
 
-        cosine_sim = 0
+        self.cosine_sim = 0
         ### CODE TO CALCULATE COSINE SIMILARITY ###
 
-        print("\nCosine similarity: ", round(cosine_sim,2))
+        print("\nCosine similarity: ", round(self.cosine_sim,2))
 
-        return cosine_sim
+        return self.cosine_sim
 
 
     def get_class_ratio(self, clf_object):
         print("\n########################################\nCalculating classification ratio...")
+    
+        # use the saved classifer to classify lines of this movie
+        self.clf_object = clf_object # contains model, count_vect, and tfidf_transformer  
+        self.preds, self.pred_probs, self.X_test = pipeline.classify_unseen(self.lines, clf_object, FEATURE_COLS)
+        '''
+        # Option 1:
+        # The ratio of the avg probability female vs probability male for the entire script. 
+        # This addresses the question: Does the script have a gender leaning, and to what extent?
+        avg_male_prob = np.mean(self.X_test.male_prob)
+        avg_female_prob = np.mean(self.X_test.female_prob)
+        
+        self.ratio_of_probs = avg_female_prob / avg_male_prob
+        print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
+        
+        return self.ratio_of_probs
+        
+        
+        # Option 2:
+        # The ratio of the probability male of male dialogue vs probability female of female dialogue. 
+        # This addresses the question: How well does male dialogue fit the male class and female dialogue 
+        # fit the female class?        
+        male_lines = self.X_test[self.X_test.gender_from == 0]
+        male_lines_male_prob = np.mean(male_lines.male_prob)
+        
+        female_lines = self.X_test[self.X_test.gender_from == 1]
+        female_lines_female_prob = np.mean(female_lines.female_prob)
+        
+        self.ratio_of_probs = female_lines_female_prob / male_lines_male_prob
+        print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
+        '''
+        
+        # NEED TO CHOOSE AN OPTION
+        # Option 1: 
+        self.ratio_of_probs = pipeline.calculate_ratio1(self.X_test)
+        
+        # Option 2:
+        self.ratio_of_probs = pipeline.calculate_ratio2(self.X_test)
+        
+        print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
 
-        self.clf_object = clf_object
-        self.model = clf_object.clf_fitted
-
-        self.X_test = pipeline.add_columns(self.lines)
-        X_test_tfidf = pipeline.transform_test(self.X_test[FEATURE_COLS],
-                                               self.clf_object.count_vect,
-                                               self.clf_object.tfidf_transformer)
-
-        predicted = self.model.predict(X_test_tfidf)
-
-        # using this as a dummy class ratio for now
-        pct_female = np.mean(predicted)
-        print("% of lines predicted female: ", round(pct_female, 2))
-
-        class_ratio = pct_female
-        ### CODE TO CALCULATE CLASSIFICATION RATIO ###
-
-        print("Class ratio: ", round(class_ratio, 2))
-
-        return class_ratio
+        return self.ratio_of_probs
+        
 
 
     def get_network_degree(self):
@@ -102,10 +127,10 @@ class Movie():
         f_degree_norm = (f_degree - degree_mean) / degree_sd
         m_degree_norm = (m_degree - degree_mean) / degree_sd
 
-        network_degree = m_degree_norm - f_degree_norm
+        self.network_degree = m_degree_norm - f_degree_norm
 
-        print("\nNetwork degree: ", round(network_degree, 2))
-        return network_degree
+        print("\nNetwork degree: ", round(self.network_degree, 2))
+        return self.network_degree
 
 
     def get_network_betweenness(self):
@@ -118,10 +143,10 @@ class Movie():
         f_btw_norm = (f_btw - btw_mean) / btw_sd
         m_btw_norm = (m_btw - btw_mean) / btw_sd
 
-        network_btw = m_btw_norm - f_btw_norm
+        self.network_btw = m_btw_norm - f_btw_norm
 
-        print("\nNetwork betweenness: ", round(network_btw, 2))
-        return network_btw
+        print("\nNetwork betweenness: ", round(self.network_btw, 2))
+        return self.network_btw
 
 
     def score_movie(self, classifier):
@@ -150,6 +175,6 @@ if __name__ == "__main__":
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
 
     # test code on one movie
-    m0_df = movies[movies.movie_id == 'm0']
-    m0_movie = Movie(m0_df, 'm0')
+    m0_df = movies[movies.movie_id == 'm1']
+    m0_movie = Movie(m0_df, 'm1')
     m0_score = m0_movie.score_movie(classifier_object)

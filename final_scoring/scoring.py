@@ -183,6 +183,6 @@ if __name__ == "__main__":
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
 
     # test code on one movie
-    m0_df = movies[movies.movie_id == 'm113']
-    m0_movie = Movie(m0_df, 'm113')
+    m0_df = movies[movies.movie_id == 'm0']
+    m0_movie = Movie(m0_df, 'm0')
     m0_score = m0_movie.score_movie(classifier_object)

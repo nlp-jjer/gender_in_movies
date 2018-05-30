@@ -17,7 +17,7 @@ class cosim:
         movie_cm = movie_cm.pivot(index='movie_id', columns='gender_from', values='raw_text').reset_index().fillna('Empty')
 
         movie_cm['fit'] = movie_cm[['f','m']].apply(lambda x: TfidfVectorizer().fit_transform([x[0], x[1]]), axis=1)
-        movie_cm['gender_cosim'] = movie_cm['fit'].apply(lambda x: cosine_similarity(x[0], x[1])[0,0])
+        movie_cm['gender_cosim'] = movie_cm['fit'].apply(lambda x: 1-cosine_similarity(x[0], x[1])[0,0])
 
         movie_cm = pd.merge(movie_cm, movie_df[['movie_id', 'genre']], how='inner', on='movie_id')
 

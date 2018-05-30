@@ -13,7 +13,8 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 
 # define columns to use as features
-FEATURE_COLS = ['words', 'agency_pos_prop','power_pos_prop', 'agency_neg_prop','power_neg_prop']
+FEATURE_COLS = ['words', 'agency_pos_prop','power_pos_prop', 'agency_neg_prop','power_neg_prop',
+                'MT1','MT2', 'MT3','WT1','WT2','WT3']
 
 # big loop
 CLASSIFIERS = {'RF': RandomForestClassifier(),
@@ -39,10 +40,6 @@ CLASSIFIER_FINAL = {'MNB': MultinomialNB()}
 GRID_FINAL = {'MNB': {'alpha':[0.5]}}
 
 # get normalization metrics for classifier using training data
-ratios_ls = pickle.load(open('../text_classification/ratios_ls', 'rb'))
-clf_ratios_mean = np.nanmean(ratios_ls)
-clf_ratios_sd = np.nanstd(ratios_ls)
-
 male_class = pickle.load(open('../text_classification/male_avgs', 'rb'))
 male_class_mean = np.nanmean(male_class)
 male_class_sd = np.nanstd(male_class)
@@ -58,7 +55,7 @@ def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dic
     output_name: csv file to write results
     """
     X_train, X_test, y_train, y_test, count_vect, tfidf_transformer = pipeline.prepare_data(input_name, feature_cols, genre=genre, speaker_pairs = speaker_pairs)
-    results, classifier_objects = pipeline.fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS_BEST, GRID_BEST, count_vect, tfidf_transformer) 
+    results, classifier_objects = pipeline.fit_models(X_train, X_test, y_train, y_test, classifier_dict, grid_dict, count_vect, tfidf_transformer) 
     results.to_csv(output_name)
     
     return results, classifier_objects
@@ -78,29 +75,25 @@ def get_normalization_clf(movies_filename, movies_lines_filename, clf_object):
     clf_object = pickle.load(open(clf_object, 'rb'))
     predicted, pred_probs, training_df = pipeline.classify_unseen(training_lines, clf_object, FEATURE_COLS)
 
-    ratios_ls = []
     male_avgs = []
     female_avgs = []
     for movie_id in training_movies:
         df = training_df[training_df.movie_id == movie_id]
-        ratio, male, female = pipeline.calculate_class_props(df)
-        ratios_ls.append(ratio)
+        male, female = pipeline.calculate_class_probs(df)
         male_avgs.append(male)
         female_avgs.append(female)
         
-    return ratios_ls, male_avgs, female_avgs
+    return male_avgs, female_avgs
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     # train best classifier
-    results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS, CLASSIFIERS_BEST, GRID_BEST)
+    results, classifier_objects = train_model("../data/movies_lines_train.p", "results_csvs/results_lr_mnb.csv", FEATURE_COLS, CLASSIFIERS_BEST, GRID_BEST)
     pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))   
     
     # get list of class probabilities for training set, save for later use when this module is called
-    ratios_ls, male_avgs, female_avgs = get_normalization_clf('../data/movies_train.p', 
-                                '../data/movies_lines_train.p', 
-                                "../text_classification/mnb_final.p")
-    pickle.dump(ratios_ls, open('ratios_ls', 'wb'))
+    male_avgs, female_avgs = get_normalization_clf('../data/movies_train.p', 
+                        '../data/movies_lines_train.p', "../text_classification/mnb_final.p")
     pickle.dump(female_avgs, open('female_avgs', 'wb'))
     pickle.dump(male_avgs, open('male_avgs', 'wb'))
 

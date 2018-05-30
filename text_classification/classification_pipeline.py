@@ -95,6 +95,13 @@ def add_columns(df):
                   how='left', 
                   on='line_id')
     
+    # load df with topic modeling columns and join with main
+    df_topics = pickle.load(open("../data/movies_lines_train_topics.p", 'rb'))
+    df_topics = df_topics.apply(pd.to_numeric, errors='ignore')
+    df = pd.merge(df, 
+                  df_topics[['line_id', 'MT1','MT2', 'MT3','WT1','WT2','WT3']], 
+                  how='left', 
+                  on='line_id')
     return df
 
 

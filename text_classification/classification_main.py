@@ -39,7 +39,7 @@ CLASSIFIER_FINAL = {'MNB': MultinomialNB()}
 GRID_FINAL = {'MNB': {'alpha':[0.5]}}
 
 # get normalization metrics using training data
-ratios_ls = pickle.load(open('../test_classification/ratios_ls', 'rb'))
+ratios_ls = pickle.load(open('../text_classification/ratios_ls', 'rb'))
 clf_ratios_mean = np.nanmean(ratios_ls)
 clf_ratios_sd = np.nanstd(ratios_ls)
 

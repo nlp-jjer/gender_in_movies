@@ -77,42 +77,15 @@ class Movie():
         # use the saved classifer to classify lines of this movie
         self.clf_object = clf_object # contains model, count_vect, and tfidf_transformer  
         self.preds, self.pred_probs, self.X_test = pipeline.classify_unseen(self.lines, clf_object, FEATURE_COLS)
-        '''
-        # Option 1:
-        # The ratio of the avg probability female vs probability male for the entire script. 
-        # This addresses the question: Does the script have a gender leaning, and to what extent?
-        avg_male_prob = np.mean(self.X_test.male_prob)
-        avg_female_prob = np.mean(self.X_test.female_prob)
-        
-        self.ratio_of_probs = avg_female_prob / avg_male_prob
-        print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
-        
-        return self.ratio_of_probs
-        
-        
-        # Option 2:
-        # The ratio of the probability male of male dialogue vs probability female of female dialogue. 
-        # This addresses the question: How well does male dialogue fit the male class and female dialogue 
-        # fit the female class?        
-        male_lines = self.X_test[self.X_test.gender_from == 0]
-        male_lines_male_prob = np.mean(male_lines.male_prob)
-        
-        female_lines = self.X_test[self.X_test.gender_from == 1]
-        female_lines_female_prob = np.mean(female_lines.female_prob)
-        
-        self.ratio_of_probs = female_lines_female_prob / male_lines_male_prob
-        print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
-        '''
         
         # NEED TO CHOOSE AN OPTION. Also, should it be like networks, the diff btw m and f?
         # Option 1: 
         ratio_of_probs = pipeline.calculate_ratio1(self.X_test)
         
         # Option 2:
-        ratio_of_probs = pipeline.calculate_ratio2(self.X_test)
+        #ratio_of_probs = pipeline.calculate_ratio2(self.X_test)
         
         # Normalize
-        
         self.ratio_of_probs = (ratio_of_probs - clf_ratios_mean) / clf_ratios_sd
         print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
 
@@ -178,6 +151,6 @@ if __name__ == "__main__":
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
 
     # test code on one movie
-    m0_df = movies[movies.movie_id == 'm1']
-    m0_movie = Movie(m0_df, 'm1')
+    m0_df = movies[movies.movie_id == 'm0']
+    m0_movie = Movie(m0_df, 'm0')
     m0_score = m0_movie.score_movie(classifier_object)

@@ -13,6 +13,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 #import our modules containing functions to be called from within the class
+sys.path.insert(0, '../preprocessing')
+from speaker_proportions import prop_diff_mean, prop_diff_sd
+
 sys.path.insert(0, '../text_classification')
 import classification_pipeline as pipeline
 import classification_main as clf_main
@@ -78,11 +81,8 @@ class Movie():
         print('Male proportion: ', round(male_prop, 2))
         
         # Normalize
-        #female_prop = (female_prop - clf_main.female_props_mean) / clf_main.female_props_sd
-        #male_prop = (male_prop - clf_main.male_props_mean) / clf_main.male_props_sd
-        prop_diff = (prop_diff - clf_main.prop_diff_mean) / clf_main.prop_diff_sd
-        
-        print('Normalized diff in proportions: ', round(prop_diff, 2))
+        prop_diff = (prop_diff - prop_diff_mean) / prop_diff_sd        
+        print('Diff in proportions (normed): ', round(prop_diff, 2))
         
         return female_prop, male_prop, prop_diff
 
@@ -94,7 +94,7 @@ class Movie():
         self.raw_cosine = movie_cosine.similarity(self.lines)
         cosine_sim = movie_cosine.norm_similarity(self.lines)
 
-        print("\nCosine similarity: ", round(cosine_sim,2))
+        print("Cosine similarity (normed): ", round(cosine_sim,2))
 
         return cosine_sim
 
@@ -110,10 +110,10 @@ class Movie():
         
         # Normalize
         male_class_avg = (male - clf_main.male_class_mean) / clf_main.male_class_sd
-        print("Normalized male prob of male lines: ", round(male_class_avg, 2))
+        print("Male prob of male lines (normed): ", round(male_class_avg, 2))
         
         female_class_avg = (female - clf_main.female_class_mean) / clf_main.female_class_sd
-        print("Normalized female prob of female lines: ", round(female_class_avg, 2))
+        print("Female prob of female lines (normed): ", round(female_class_avg, 2))
 
         return male_class_avg, female_class_avg
         
@@ -123,6 +123,9 @@ class Movie():
 
         f_degree = nt.get_centrality(self.counts, 'degree', 'f')
         m_degree = nt.get_centrality(self.counts, 'degree', 'm')
+        
+        print("Female degree: ", round(f_degree,2))
+        print("Male degree: ", round(m_degree,2))
 
         #normalize
         f_degree_norm = (f_degree - degree_mean) / degree_sd
@@ -130,7 +133,7 @@ class Movie():
 
         network_degree = abs(m_degree_norm - f_degree_norm)
 
-        print("\nNetwork degree diff: ", round(network_degree, 2))
+        print("Network degree diff (normed): ", round(network_degree, 2))
         return network_degree, m_degree_norm, f_degree_norm
 
 
@@ -139,6 +142,9 @@ class Movie():
 
         f_btw = nt.get_centrality(self.counts, 'betweenness', 'f')
         m_btw = nt.get_centrality(self.counts, 'betweenness', 'm')
+        
+        print("Female betweenness: ", round(f_btw,2))
+        print("Male betweenness: ", round(m_btw,2))
 
         #normalize
         f_btw_norm = (f_btw - btw_mean) / btw_sd
@@ -146,7 +152,7 @@ class Movie():
 
         network_btw = abs(m_btw_norm - f_btw_norm)
 
-        print("\nNetwork betweenness diff: ", round(network_btw, 2))
+        print("Network betweenness diff (normed): ", round(network_btw, 2))
         return network_btw, m_btw_norm, f_btw_norm
 
 
@@ -177,6 +183,6 @@ if __name__ == "__main__":
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
 
     # test code on one movie
-    m0_df = movies[movies.movie_id == 'm49']
-    m0_movie = Movie(m0_df, 'm49')
+    m0_df = movies[movies.movie_id == 'm0']
+    m0_movie = Movie(m0_df, 'm0')
     m0_score = m0_movie.score_movie(classifier_object)

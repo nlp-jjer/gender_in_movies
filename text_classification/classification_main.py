@@ -5,10 +5,11 @@ Created on Sun Apr 29 13:12:50 2018
 @author: JoanWang
 """
 import pickle
+import numpy as np
 import classification_pipeline as pipeline
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 
 # define columns to use as features
@@ -37,6 +38,12 @@ GRID_BEST = {'MNB': {'alpha':[0.5]}, 'LR': {'penalty': ['l1', 'l2'], 'C': [1]}}
 CLASSIFIER_FINAL = {'MNB': MultinomialNB()}
 GRID_FINAL = {'MNB': {'alpha':[0.5]}}
 
+# get normalization metrics using training data
+ratios_ls = pickle.load(open('../text_classification/ratios_ls', 'rb'))
+clf_ratios_mean = np.nanmean(ratios_ls)
+clf_ratios_sd = np.nanstd(ratios_ls)
+
+
 def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dict, genre = 'all', speaker_pairs = False):
     """
     input_name: pickle file containing preprocessed dataframe, before feature generation
@@ -49,10 +56,39 @@ def train_model(input_name, output_name, feature_cols, classifier_dict, grid_dic
     return results, classifier_objects
 
 
-if __name__ == 'main':
-    results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS,CLASSIFIERS_BEST, GRID_BEST)
-    pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))
+def get_normalization(movies_filename, movies_lines_filename, clf_object):
+    '''
+    Get mean and sd ratio value for entire training set (movies used to test and validate the classifer)
+    to use as normalization factor for final scoring.
+    
+    training_movies: list of movies in training set (whole db minus holdout)
+    training_df: lines of movies in the training_movies list, classified using
+        chosen best classifier
+    '''    
+    training_movies = list(pickle.load(open(movies_filename, 'rb')).movie_id)
+    training_lines = pickle.load(open(movies_lines_filename, 'rb'))
+    clf_object = pickle.load(open(clf_object, 'rb'))
+    predicted, pred_probs, training_df = pipeline.classify_unseen(training_lines, clf_object, FEATURE_COLS)
 
+    ratios_ls = []
+    for movie_id in training_movies:
+        df = training_df[training_df.movie_id == movie_id]
+        ratio = pipeline.calculate_ratio1(df) # basing it off ratio1 for now
+        ratios_ls.append(ratio)
+    print(len(ratios_ls))
+    return ratios_ls
+
+
+if __name__ == 'main':
+    # train best classifier
+    results, classifier_objects = train_model("../data/movies_lines_train.p", "results_lr_mnb.csv", FEATURE_COLS, CLASSIFIERS_BEST, GRID_BEST)
+    pickle.dump(classifier_objects[0], open('mnb_final.p', 'wb'))   
+    
+    # get list of ratios 
+    ratios_ls = get_normalization('../data/movies_train.p', 
+                                '../data/movies_lines_train.p', 
+                                "../text_classification/mnb_final.p")
+    pickle.dump(ratios_ls, open('ratios_ls', 'wb'))
 
 '''
 OLD CODE THAT WAS PREVIOUSLY RUN

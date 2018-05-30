@@ -19,6 +19,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 from scipy import sparse
 
+pd.options.mode.chained_assignment = None
+
 
 
 class TextClassifier():
@@ -36,6 +38,7 @@ def prepare_data(filename, feature_cols, genre = 'all', speaker_pairs = False, r
     Prepare data for modeling. Get the same train/test split unless random_state is specified.
     
     filename: path to pickled dataframe
+    feature_cols: list of columns in df to use as features
     ''' 
     # load pre-processed df
     df = pickle.load(open(filename, 'rb'))
@@ -61,6 +64,12 @@ def prepare_data(filename, feature_cols, genre = 'all', speaker_pairs = False, r
 
 
 def add_columns(df):    
+    '''
+    Add columns to input dataframe (which has been preprocessed) for non-text features,
+    i.e. power/agency analysis and topic modeling.
+    
+    Also convert output columns into usable format for machine learning.
+    '''
     # Treat gender_from and gender_to columns: remove unknown gender, 0 is male and 1 is female
     df = df[df.gender_from != '?']
     df['gender_from'] = np.where(df.gender_from == 'f', 1, 0)
@@ -77,9 +86,7 @@ def add_columns(df):
          (df.gender_from == 1) & (df.gender_to == 1)]
     choices = [0,1,2,3]
     df['gender_pair'] = np.select(conditions, choices)
-    
-    print(df.shape)
-    
+
     # load df with power/agency verb columns and join with main
     df_verbs = pickle.load(open("../data/movies_verbs.p", 'rb'))
     df_verbs.fillna(0, inplace=True)
@@ -88,12 +95,13 @@ def add_columns(df):
                   how='left', 
                   on='line_id')
     
-    print(df.shape)
-    
     return df
 
 
 def transform_train(X_train):
+    '''
+    Process text features of training dataframe
+    '''
     count_vect = CountVectorizer() # using bag of words
     tfidf_transformer = TfidfTransformer()
     
@@ -109,6 +117,10 @@ def transform_train(X_train):
 
 
 def transform_test(X_test, count_vect, tfidf_transformer):
+    '''
+    Process test features of testing dataframe, using count_vect and 
+    tfidf_transformer created on training data
+    '''
     X_test_counts = count_vect.transform(X_test.words)
     X_test_tfidf = tfidf_transformer.transform(X_test_counts)
     
@@ -173,6 +185,56 @@ def fit_models(X_train, X_test, y_train, y_test, CLASSIFIERS, GRID, count_vect, 
     return results, classifier_objects
 
 
+def classify_unseen(test_df, clf_object, feature_cols):
+    '''
+    Function for scoring.py to classify movies from the holdout set using 
+    a specific saved classifier object.
+    Attach predictions and predicted probabilities to the last columns of test_df.
+    
+    test_df: df containing movie lines to be tested
+    clf_object: object of class TextClassifier containing 
+    feature_cols: list of columns from df that were used as features
+    '''
+    model =  clf_object.clf_fitted
+    
+    test_df = add_columns(test_df)
+    test_df_tfidf = transform_test(test_df[feature_cols],
+                                           clf_object.count_vect,
+                                           clf_object.tfidf_transformer)
+    predicted = model.predict(test_df_tfidf)
+    pred_probs = model.predict_proba(test_df_tfidf)
+    test_df['male_prob'] = pred_probs[:, 0]
+    test_df['female_prob'] = pred_probs[:, 1]
+    
+    return predicted, pred_probs, test_df
+
+
+def calculate_ratio1(df):
+    # Option 1:
+    # The ratio of the avg probability female vs probability male for the entire script. 
+    # This addresses the question: Does the script have a gender leaning, and to what extent?
+    avg_male_prob = np.mean(df.male_prob)
+    avg_female_prob = np.mean(df.female_prob)
+    
+    ratio_of_probs = avg_female_prob / avg_male_prob
+    
+    return ratio_of_probs
+
+
+def calculate_ratio2(df):
+    # Option 2:
+    # The ratio of the probability male of male dialogue vs probability female of female dialogue. 
+    # This addresses the question: How well does male dialogue fit the male class and female dialogue 
+    # fit the female class?        
+    male_lines = df[df.gender_from == 0]
+    male_lines_male_prob = np.mean(male_lines.male_prob)
+    
+    female_lines = df[df.gender_from == 1]
+    female_lines_female_prob = np.mean(female_lines.female_prob)
+    
+    ratio_of_probs = female_lines_female_prob / male_lines_male_prob
+    
+    return ratio_of_probs
 
 
 def plot_precision_recall(y_true, y_score, model_name):

@@ -47,6 +47,8 @@ class Movie():
         # from network connectedness
         self.network_degree = None
         self.network_btw = None
+        
+        self.final_score = None
 
 
     def get_female_prop(self):
@@ -79,10 +81,9 @@ class Movie():
         self.clf_object = clf_object # contains model, count_vect, and tfidf_transformer  
         self.preds, self.pred_probs, self.X_test = pipeline.classify_unseen(self.lines, clf_object, clf_main.FEATURE_COLS)
 
-        male, female = pipeline.calculate_ratio2(self.X_test)
+        male, female = pipeline.calculate_class_probs(self.X_test)
         
         # Normalize
-        
         male_class_avg = (male - clf_main.male_class_mean) / clf_main.male_class_sd
         print("Avg male prob of male lines: ", round(male_class_avg, 2))
         
@@ -102,7 +103,7 @@ class Movie():
         f_degree_norm = (f_degree - degree_mean) / degree_sd
         m_degree_norm = (m_degree - degree_mean) / degree_sd
 
-        network_degree = m_degree_norm - f_degree_norm
+        network_degree = abs(m_degree_norm - f_degree_norm)
 
         print("\nNetwork degree: ", round(network_degree, 2))
         return network_degree
@@ -118,7 +119,7 @@ class Movie():
         f_btw_norm = (f_btw - btw_mean) / btw_sd
         m_btw_norm = (m_btw - btw_mean) / btw_sd
 
-        network_btw = m_btw_norm - f_btw_norm
+        network_btw = abs(m_btw_norm - f_btw_norm)
 
         print("\nNetwork betweenness: ", round(network_btw, 2))
         return network_btw
@@ -136,12 +137,12 @@ class Movie():
         self.network_btw = self.get_network_betweenness()
 
         # need to weight these based on observed distributions
-        final_score = np.mean([self.female_prop, self.cosine_sim,
+        self.final_score = np.mean([self.female_prop, self.cosine_sim,
                                self.male_class_avg, self.female_class_avg, 
                                self.network_degree, self.network_btw])
     
         print("\n########################################\nFinal score: ",
-              round(final_score, 2))
+              round(self.final_score, 2))
 
 
 
@@ -151,6 +152,6 @@ if __name__ == "__main__":
     classifier_object = pickle.load(open("../text_classification/mnb_final.p", 'rb'))
 
     # test code on one movie
-    m0_df = movies[movies.movie_id == 'm113']
-    m0_movie = Movie(m0_df, 'm113')
+    m0_df = movies[movies.movie_id == 'm0']
+    m0_movie = Movie(m0_df, 'm0')
     m0_score = m0_movie.score_movie(classifier_object)

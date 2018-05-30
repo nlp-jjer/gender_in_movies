@@ -209,23 +209,14 @@ def classify_unseen(test_df, clf_object, feature_cols):
     return predicted, pred_probs, test_df
 
 
-def calculate_ratio1(df):
-    # Option 1:
-    # The ratio of the avg probability female vs probability male for the entire script. 
-    # This addresses the question: Does the script have a gender leaning, and to what extent?
-    avg_male_prob = np.mean(df.male_prob)
-    avg_female_prob = np.mean(df.female_prob)
-    
-    ratio_of_probs = avg_female_prob / avg_male_prob
-    
-    return ratio_of_probs
+def calculate_class_probs(df):
+    '''
+    Compare the probability male of male dialogue vs probability female of female dialogue. 
+    This addresses the question: How well does male dialogue fit the male class and female dialogue 
+    fit the female class?  
 
-
-def calculate_ratio2(df):
-    # Option 2:
-    # The ratio of the probability male of male dialogue vs probability female of female dialogue. 
-    # This addresses the question: How well does male dialogue fit the male class and female dialogue 
-    # fit the female class?        
+    A high score for for either class means the class closely fits the Hollywood standard for that gender    
+    '''
     male_lines = df[df.gender_from == 0]
     male_lines_male_avg = np.mean(male_lines.male_prob)
     

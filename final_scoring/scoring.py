@@ -13,7 +13,7 @@ from sklearn import metrics
 #import our modules containing functions to be called from within the class
 sys.path.insert(0, '../text_classification')
 import classification_pipeline as pipeline
-from classification_main import FEATURE_COLS
+from classification_main import FEATURE_COLS, clf_ratios_mean, clf_ratios_sd
 
 sys.path.insert(0, '../network')
 from network_train import degree_mean, degree_sd, btw_mean, btw_sd
@@ -104,13 +104,16 @@ class Movie():
         print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
         '''
         
-        # NEED TO CHOOSE AN OPTION
+        # NEED TO CHOOSE AN OPTION. Also, should it be like networks, the diff btw m and f?
         # Option 1: 
-        self.ratio_of_probs = pipeline.calculate_ratio1(self.X_test)
+        ratio_of_probs = pipeline.calculate_ratio1(self.X_test)
         
         # Option 2:
-        self.ratio_of_probs = pipeline.calculate_ratio2(self.X_test)
+        ratio_of_probs = pipeline.calculate_ratio2(self.X_test)
         
+        # Normalize
+        
+        self.ratio_of_probs = (ratio_of_probs - clf_ratios_mean) / clf_ratios_sd
         print("Ratio of avg female/male prob: ", round(self.ratio_of_probs, 5))
 
         return self.ratio_of_probs

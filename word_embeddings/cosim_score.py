@@ -13,7 +13,7 @@ class cosim:
         self.train_std = 0
 
     def similarity(self, movie_df, train=False):
-        if ('m' not in (set(one_movie['gender_from']))) | ('f' not in (set(one_movie['gender_from']))):
+        if ('m' not in (set(movie_df['gender_from']))) | ('f' not in (set(movie_df['gender_from']))):
             return 1.0       
         movie_cm = movie_df.groupby(['movie_id', 'gender_from']).apply(lambda x: " ".join(x['words'])).reset_index(name='raw_text')
         movie_cm = movie_cm.pivot(index='movie_id', columns='gender_from', values='raw_text').reset_index().fillna('Empty')

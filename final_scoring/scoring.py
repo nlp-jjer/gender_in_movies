@@ -9,6 +9,8 @@ import pickle
 import pandas as pd
 import numpy as np
 from sklearn import metrics
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 #import our modules containing functions to be called from within the class
 sys.path.insert(0, '../text_classification')
@@ -18,6 +20,9 @@ import classification_main as clf_main
 sys.path.insert(0, '../network')
 from network_train import degree_mean, degree_sd, btw_mean, btw_sd
 import network_functions as nt
+
+sys.path.insert(0, '../word_embeddings')
+from cosim_score import movie_cosine
 
 ##########################################################
 
@@ -42,6 +47,7 @@ class Movie():
         self.female_class_avg = None
 
         # for cosine similarity
+        self.raw_cosine = None
         self.cosine_sim = None
 
         # from network connectedness
@@ -66,8 +72,9 @@ class Movie():
     def get_cosine_sim(self):
         print("\n########################################\nCalculating cosine similarity...")
 
-        cosine_sim = 0
-        ### CODE TO CALCULATE COSINE SIMILARITY ###
+        # Calculate & save similarity score before normalization 
+        self.raw_cosine = movie_cosine.similarity(self.lines)
+        cosine_sim = movie_cosine.norm_similarity(self.lines)
 
         print("\nCosine similarity: ", round(cosine_sim,2))
 

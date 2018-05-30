@@ -28,20 +28,26 @@ class cosim:
 
         return float(return_df['gender_cosim'])
 
-    def train_movies(self, train_df):
+    def cosim_train(self, train_df):
         train_proc = self.similarity(train_df, train=True)
 
         train_stat = train_proc.describe()
         self.train_mean = train_stat.loc['mean', 'gender_cosim']
         self.train_std = train_stat.loc['std', 'gender_cosim']
 
-    def normalize_cosim(self, cosim_df):
-        cosim_df['norm_cosim'] = (cosim_df['gender_cosim']-self.train_mean)/self_train_std
-
-        return cosim_df
 
     def norm_similarity(self, movie_df):
         cosim_df = self.similarity(movie_df, train=True)
         cosim_df['norm_cosim'] = (cosim_df['gender_cosim']-self.train_mean)/self.train_std
 
         return float(cosim_df['norm_cosim'])
+
+
+
+movies_train = pickle.load(open("../data/movies_lines_train.p", 'rb'))    
+    
+movie_cosine = cosim()
+movie_cosine.cosim_train(movies_train)
+
+
+
